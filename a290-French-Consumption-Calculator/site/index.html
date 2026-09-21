@@ -1,0 +1,1166 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>A290 contre la pompe</title>
+<meta name="description" content="Alpine A290 ou voiture thermique ? Calculez ce que vous coûtent vraiment la recharge, le loyer et le carburant, avec les prix moyens nationaux mis à jour chaque jour.">
+<meta property="og:title" content="A290 contre la pompe">
+<meta property="og:description" content="Recharge, loyer, carburant, décote : le vrai match entre l’Alpine A290 et une thermique, avec les prix du carburant mis à jour chaque jour.">
+<meta property="og:type" content="website">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&family=Saira+Condensed:wght@500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--space-1:4px;--space-2:8px;--space-3:12px;--space-4:16px;--space-5:24px;--space-6:32px;--space-7:48px;--space-8:64px;--radius-none:0;--radius-sm:2px;--radius-pill:999px;--chamfer-md:20px;--font-display:"Saira Condensed", "Barlow Condensed", "Arial Narrow", sans-serif;--font-sans:Barlow, system-ui, sans-serif;--font-mono:"JetBrains Mono", ui-monospace, monospace;--abyss:#e8edf5;--surface:#ffffff;--surface-raised:#f1f5fa;--hairline:#cbd5e5;--border-strong:#66799a;--ink:#0a1222;--ink-muted:#465a7c;--blue:#0b57d0;--blue-fill:#0b57d0;--on-blue:#ffffff;--heat:#c2361b;--on-heat:#ffffff;--glacier:#0a1222;--on-glacier:#f4f7fc;--positive:#0a7448;--focus:var(--blue);--glow-blue:0 8px 24px rgba(11,87,208,0.14);color-scheme:light}
+@media (prefers-color-scheme: dark){:root:not([data-theme="day"]):not([data-theme="light"]){--abyss:#060a12;--surface:#0d1524;--surface-raised:#16233c;--hairline:#263756;--border-strong:#5b7499;--ink:#f4f7fc;--ink-muted:#a6b5cf;--blue:#4a9bff;--blue-fill:#0a56e0;--on-blue:#ffffff;--heat:#ff6b47;--on-heat:#1c0a04;--glacier:#eef3fb;--on-glacier:#0a1222;--positive:#3fdd9b;--focus:var(--blue);--glow-blue:0 0 32px rgba(74,155,255,0.28);color-scheme:dark}}
+:root[data-theme="night"],:root[data-theme="dark"]{--abyss:#060a12;--surface:#0d1524;--surface-raised:#16233c;--hairline:#263756;--border-strong:#5b7499;--ink:#f4f7fc;--ink-muted:#a6b5cf;--blue:#4a9bff;--blue-fill:#0a56e0;--on-blue:#ffffff;--heat:#ff6b47;--on-heat:#1c0a04;--glacier:#eef3fb;--on-glacier:#0a1222;--positive:#3fdd9b;--focus:var(--blue);--glow-blue:0 0 32px rgba(74,155,255,0.28);color-scheme:dark}
+/* A290 contre la pompe — component styles. Classes are prefixed a-; chart parts c-. Colours, type, spacing come from tokens.css. */
+
+.a-root {
+  margin: 0;
+  background: var(--abyss);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  font-size: 16px;
+  line-height: 24px;
+  -webkit-font-smoothing: antialiased;
+}
+.a-root *, .a-root *::before, .a-root *::after { box-sizing: border-box; }
+.a-root :focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+.a-num { font-variant-numeric: tabular-nums; }
+
+/* ---------- Flag stripe: the only multi-colour device ---------- */
+.a-flag { display: grid; grid-template-columns: 3fr 1fr 2fr; height: 4px; }
+.a-flag > span:nth-child(1) { background: var(--blue-fill); }
+.a-flag > span:nth-child(2) { background: var(--glacier); }
+.a-flag > span:nth-child(3) { background: var(--heat); }
+
+/* ---------- Labels, chips, buttons ---------- */
+.a-label {
+  margin: 0;
+  font: 600 12px/16px var(--font-sans);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+}
+.a-headline {
+  margin: 0;
+  font: 700 28px/30px var(--font-display);
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: var(--ink);
+}
+.a-note { margin: 0; font: 400 14px/20px var(--font-sans); color: var(--ink-muted); }
+
+.a-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: 4px 12px;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-pill);
+  background: transparent;
+  color: var(--ink);
+  font: 500 12px/16px var(--font-mono);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+.a-chip--positive { border-color: var(--positive); color: var(--positive); }
+.a-chip--heat { border-color: var(--heat); color: var(--heat); }
+.a-chip--blue { border-color: var(--blue); color: var(--blue); }
+.a-chip--action { cursor: pointer; }
+.a-chip--action:hover { background: var(--surface-raised); }
+.a-chip--action[aria-pressed="true"] { background: var(--blue-fill); border-color: var(--blue-fill); color: var(--on-blue); }
+.a-chip__x { width: 10px; height: 10px; stroke: currentColor; stroke-width: 2; fill: none; }
+
+.a-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: 10px 16px;
+  border: 0;
+  border-radius: var(--radius-sm);
+  background: var(--blue-fill);
+  color: var(--on-blue);
+  font: 600 13px/16px var(--font-sans);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  cursor: pointer;
+  box-shadow: var(--glow-blue);
+}
+.a-btn:hover { filter: brightness(1.12); }
+.a-btn--ghost { background: transparent; color: var(--ink); box-shadow: none; outline: 1px solid var(--border-strong); outline-offset: -1px; }
+.a-btn--ghost:hover { background: var(--surface-raised); filter: none; }
+
+/* ---------- Page frame ---------- */
+.a-page { max-width: 1200px; margin: 0 auto; padding: 0 var(--space-5) var(--space-7); }
+.a-top { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--space-3) var(--space-5); padding: var(--space-4) 0; }
+.a-brand { display: flex; align-items: baseline; gap: var(--space-3); font: 800 22px/1 var(--font-display); letter-spacing: 0.06em; text-transform: uppercase; }
+.a-brand__sub { font: 500 12px/16px var(--font-mono); letter-spacing: 0.08em; color: var(--ink-muted); }
+.a-top__meta { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2); }
+
+/* ---------- Panel: surface + cut corner ---------- */
+.a-panel {
+  background: var(--surface);
+  padding: var(--space-5);
+  clip-path: polygon(0 0, calc(100% - var(--chamfer-md)) 0, 100% var(--chamfer-md), 100% 100%, 0 100%);
+}
+.a-panel__head { display: flex; align-items: baseline; justify-content: space-between; gap: var(--space-3); margin-bottom: var(--space-4); }
+
+/* ---------- Intro ---------- */
+.a-intro { display: grid; grid-template-columns: auto minmax(0, 52ch); justify-content: space-between; align-items: end; gap: var(--space-3) var(--space-6); padding-top: var(--space-6); }
+.a-h1 { margin: 6px 0 0; font: 800 64px/60px var(--font-display); letter-spacing: -0.01em; text-transform: uppercase; color: var(--ink); }
+.a-intro .a-note { font-size: 16px; line-height: 24px; }
+
+/* ---------- Verdict hero ---------- */
+.a-hero { position: relative; display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr); gap: var(--space-6); align-items: stretch; padding: var(--space-6) 0 var(--space-5); }
+.a-hero__main { position: relative; display: grid; gap: var(--space-4); align-content: start; }
+.a-xsig { position: absolute; left: 0; top: 0; width: 520px; max-width: 100%; height: auto; stroke: var(--hairline); stroke-width: 14; fill: none; opacity: 0.55; pointer-events: none; }
+.a-hero__main > *:not(.a-xsig) { position: relative; }
+.a-hero__figure { margin: 0; display: flex; align-items: flex-start; gap: 8px; font-family: var(--font-display); font-weight: 800; color: var(--ink); line-height: 0.86; }
+.a-hero__num { font-size: clamp(96px, 15vw, 176px); letter-spacing: -0.02em; font-variant-numeric: tabular-nums; }
+.a-hero__cur { margin-top: 0.06em; font-size: clamp(44px, 7vw, 84px); color: var(--blue); }
+.a-hero[data-state="deficit"] .a-hero__cur { color: var(--heat); }
+.a-hero__meta { margin: 0; font: 500 13px/20px var(--font-mono); color: var(--ink-muted); letter-spacing: 0.02em; }
+
+.a-duel { display: grid; gap: var(--space-3); margin-top: var(--space-2); }
+.a-duel__row { display: grid; grid-template-columns: 88px minmax(0, 1fr) 104px; align-items: center; gap: var(--space-3); }
+.a-duel__name { font: 600 12px/16px var(--font-sans); letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink-muted); }
+.a-duel__track { position: relative; height: 22px; }
+.a-duel__bar { position: absolute; left: 0; top: 0; bottom: 0; width: var(--w, 0%); }
+.a-duel__bar--heat { background: var(--heat); }
+.a-duel__bar--blue { background: var(--blue-fill); box-shadow: var(--glow-blue); }
+.a-duel__saved { position: absolute; top: 0; bottom: 0; left: var(--w, 0%); right: 0; background: repeating-linear-gradient(135deg, var(--border-strong) 0 1.5px, transparent 1.5px 7px); opacity: 0.7; }
+.a-duel__value { text-align: right; font: 700 22px/1 var(--font-display); letter-spacing: 0.01em; font-variant-numeric: tabular-nums; }
+.a-duel__value--heat { color: var(--heat); }
+.a-duel__value--blue { color: var(--blue); }
+.a-duel__note { margin: 0; padding-left: calc(88px + var(--space-3)); font: 500 12px/16px var(--font-mono); color: var(--ink-muted); }
+
+/* ---------- Photo slot ---------- */
+.a-photo {
+  position: relative;
+  min-height: 240px;
+  height: 100%;
+  background-color: var(--surface);
+  background-size: cover;
+  background-position: center;
+  clip-path: polygon(0 0, calc(100% - var(--chamfer-md)) 0, 100% var(--chamfer-md), 100% 100%, 0 100%);
+  display: grid;
+  place-items: center;
+  text-align: center;
+}
+.a-photo::before { content: ""; position: absolute; inset: 12px; border: 1.5px dashed var(--border-strong); pointer-events: none; }
+.a-photo[data-filled="true"]::before { display: none; }
+.a-photo__inner { display: grid; justify-items: center; gap: var(--space-3); padding: var(--space-5); }
+.a-photo[data-filled="true"] .a-photo__inner { align-self: end; justify-self: start; padding: var(--space-4); }
+.a-photo__ridge { width: 96px; height: 40px; stroke: var(--ink-muted); stroke-width: 2; fill: none; stroke-linejoin: miter; }
+.a-photo__file { position: absolute; width: 1px; height: 1px; opacity: 0; overflow: hidden; }
+.a-photo__file:focus-visible + .a-btn { outline: 2px solid var(--focus); outline-offset: 2px; }
+.a-photo__status { margin: 0; font: 500 12px/16px var(--font-mono); color: var(--ink-muted); }
+.a-photo[data-filled="true"] .a-photo__status { background: var(--abyss); padding: 4px 8px; }
+
+/* ---------- Stats ---------- */
+.a-stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1px; background: var(--hairline); border-block: 1px solid var(--hairline); }
+.a-stat { background: var(--abyss); padding: var(--space-5) var(--space-5) var(--space-5) 0; display: grid; gap: var(--space-2); align-content: start; }
+.a-stat + .a-stat { padding-left: var(--space-5); }
+.a-stat--wide { grid-column: span 2; }
+.a-stat__value { margin: 0; display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; font: 700 44px/44px var(--font-display); font-variant-numeric: tabular-nums; color: var(--ink); }
+.a-stat__unit { font: 500 13px/16px var(--font-mono); color: var(--ink-muted); }
+.a-stat__value--blue { color: var(--blue); }
+.a-stat__value--heat { color: var(--heat); }
+.a-stat__value--text { font-size: 32px; line-height: 40px; text-transform: uppercase; letter-spacing: 0.02em; }
+.a-stat__pair { display: flex; flex-wrap: wrap; gap: var(--space-2) var(--space-6); }
+.a-stat__pair > div { display: grid; gap: var(--space-1); }
+.a-stat__who { font: 600 11px/14px var(--font-sans); letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink-muted); display: flex; align-items: center; gap: 8px; }
+.a-stat__who::before { content: ""; width: 12px; height: 3px; background: currentColor; }
+.a-stat__who--blue { color: var(--blue); }
+.a-stat__who--heat { color: var(--heat); }
+
+/* ---------- Chart ---------- */
+.a-chart { position: relative; }
+.a-legend { display: flex; flex-wrap: wrap; gap: var(--space-2) var(--space-5); margin: 0 0 var(--space-3); padding: 0; list-style: none; font: 400 12px/16px var(--font-sans); color: var(--ink-muted); }
+.a-legend li { display: inline-flex; align-items: center; gap: 8px; }
+.a-legend i { display: inline-block; width: 22px; height: 0; border-top: 3px solid currentColor; }
+.a-legend .is-heat { color: var(--heat); }
+.a-legend .is-blue { color: var(--blue); }
+.a-legend .is-price i { border-top-width: 1.5px; border-top-style: dashed; color: var(--ink-muted); }
+.a-legend span { color: var(--ink-muted); }
+.a-chart svg { display: block; width: 100%; height: auto; overflow: visible; touch-action: pan-y; }
+.c-grid { stroke: var(--hairline); stroke-width: 1; fill: none; }
+.c-axis { stroke: var(--border-strong); stroke-width: 1; fill: none; }
+.c-tick { fill: var(--ink-muted); font: 500 11px var(--font-mono); }
+.c-tick--end { text-anchor: end; }
+.c-tick--mid { text-anchor: middle; }
+.c-line { fill: none; stroke-width: 3; stroke-linejoin: round; stroke-linecap: round; }
+.c-line--heat { stroke: var(--heat); }
+.c-line--blue { stroke: var(--blue); }
+.c-line--price { stroke: var(--ink-muted); stroke-width: 1.5; stroke-dasharray: 3 3; }
+.c-saving { fill: var(--blue); opacity: 0.14; }
+.c-saving--deficit { fill: var(--heat); }
+.c-x { fill: none; stroke-width: 3; stroke-linecap: square; }
+.c-x--heat { stroke: var(--heat); }
+.c-x--blue { stroke: var(--blue); }
+.c-halo { fill: var(--abyss); }
+.c-endlab { font: 700 20px var(--font-display); letter-spacing: 0.01em; }
+.c-endlab--heat { fill: var(--heat); }
+.c-endlab--blue { fill: var(--blue); }
+.c-gap { stroke: var(--ink); stroke-width: 1; fill: none; }
+.c-gaplab { fill: var(--ink); font: 500 12px var(--font-mono); text-anchor: end; }
+.c-strip { fill: var(--surface-raised); }
+.c-cursor { stroke: var(--ink-muted); stroke-width: 1; stroke-dasharray: 2 3; }
+.c-dot { stroke: var(--abyss); stroke-width: 2; }
+.c-dot--heat { fill: var(--heat); }
+.c-dot--blue { fill: var(--blue); }
+.a-tip { position: absolute; z-index: 2; pointer-events: none; min-width: 176px; padding: 10px 12px; background: var(--surface-raised); color: var(--ink); font: 500 12px/18px var(--font-mono); box-shadow: 0 0 0 1px var(--border-strong); }
+.a-tip[hidden] { display: none; }
+.a-tip b { display: block; margin-bottom: 4px; font: 600 11px/14px var(--font-sans); letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink-muted); }
+.a-tip div { display: flex; justify-content: space-between; gap: 16px; }
+.a-tip .is-heat { color: var(--heat); }
+.a-tip .is-blue { color: var(--blue); }
+
+/* ---------- Parameters ---------- */
+.a-form { display: grid; gap: var(--space-5); }
+.a-group { margin: 0; padding: 0; border: 0; display: grid; gap: var(--space-3); min-width: 0; }
+.a-group > legend { display: block; float: left; width: 100%; padding: 0 0 8px; margin: 0 0 var(--space-3); border-bottom: 1px solid var(--hairline); font: 700 18px/20px var(--font-display); letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink); }
+.a-group > legend + * { clear: both; }
+.a-row { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-3); }
+.a-field { display: grid; gap: 6px; min-width: 0; }
+.a-field > label { font: 600 11px/14px var(--font-sans); letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink-muted); }
+.a-input { display: flex; align-items: baseline; gap: 8px; background: var(--surface-raised); border-bottom: 2px solid var(--border-strong); border-radius: var(--radius-sm) var(--radius-sm) 0 0; padding: 8px 12px; }
+.a-input:focus-within { border-bottom-color: var(--blue); }
+.a-input input, .a-input select { flex: 1; min-width: 0; width: 100%; border: 0; background: transparent; color: var(--ink); font: 500 20px/24px var(--font-mono); font-variant-numeric: tabular-nums; padding: 0; outline: none; appearance: none; -webkit-appearance: none; }
+.a-input select { font-size: 16px; cursor: pointer; }
+.a-input input[type="date"] { font-size: 14px; color-scheme: dark; }
+:root[data-theme="day"] .a-input input[type="date"] { color-scheme: light; }
+.a-input__unit { flex: none; font: 500 12px/16px var(--font-mono); color: var(--ink-muted); }
+.a-hint { margin: 0; font: 400 13px/18px var(--font-sans); color: var(--ink-muted); }
+.a-presets { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+.a-source { margin: 0; font: 400 12px/18px var(--font-sans); color: var(--ink-muted); max-width: 88ch; }
+
+/* ---------- Dashboard layout ---------- */
+.a-dash { display: grid; grid-template-columns: 340px minmax(0, 1fr); gap: var(--space-6); align-items: start; }
+.a-dash__rail { position: sticky; top: var(--space-4); }
+.a-dash__main { display: grid; gap: var(--space-6); min-width: 0; }
+.a-section-head { display: grid; gap: var(--space-2); margin-bottom: var(--space-4); max-width: 60ch; }
+.a-foot { display: grid; gap: var(--space-2); margin-top: var(--space-7); padding-top: var(--space-5); border-top: 1px solid var(--hairline); }
+
+@media (max-width: 900px) {
+  .a-intro { grid-template-columns: minmax(0, 1fr); }
+  .a-h1 { font-size: 48px; line-height: 46px; }
+  .a-hero { grid-template-columns: minmax(0, 1fr); }
+  .a-dash { grid-template-columns: minmax(0, 1fr); }
+  .a-dash__rail { position: static; order: 2; }
+  .a-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); grid-auto-flow: dense; }
+  .a-stat--wide, .a-stat:last-child { grid-column: span 2; }
+  .a-stat, .a-stat + .a-stat { padding-left: 0; }
+}
+@media (max-width: 520px) {
+  .a-stats { grid-template-columns: minmax(0, 1fr); }
+  .a-stat--wide, .a-stat:last-child { grid-column: auto; }
+  .a-duel__row { grid-template-columns: 72px minmax(0, 1fr) 92px; }
+  .a-duel__note { padding-left: 0; }
+  .a-row { grid-template-columns: minmax(0, 1fr); }
+  .a-stat__value { font-size: 40px; }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .a-duel__bar { transition: width 240ms ease-out; }
+  .a-chip--action, .a-btn { transition: background-color 120ms ease-out, filter 120ms ease-out; }
+}
+
+html,body{margin:0;background:var(--abyss)}
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);background:var(--abyss)}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+.a-dash>*,.a-hero>*{min-width:0}
+.a-group{min-width:0}
+.a-input input[type=date]{min-width:0;width:100%}
+.a-photo{background-size:cover;background-position:center}
+.a-prices{margin-top:var(--space-7)}
+.a-prices summary{cursor:pointer;list-style:none;display:flex;align-items:center;gap:var(--space-3)}
+.a-prices summary::-webkit-details-marker{display:none}
+.a-prices summary::before{content:"+";font-family:var(--font-mono);color:var(--blue);width:1ch}
+.a-prices details[open] summary::before{content:"–"}
+.a-prices .a-note{margin:var(--space-3) 0}
+.a-tbl{overflow:auto;max-height:460px;border-top:1px solid var(--hairline)}
+.a-tbl table{border-collapse:collapse;width:100%;font:500 13px/18px var(--font-mono);font-variant-numeric:tabular-nums}
+.a-tbl th,.a-tbl td{padding:8px 12px;text-align:right;border-bottom:1px solid var(--hairline);white-space:nowrap}
+.a-tbl th:first-child,.a-tbl td:first-child{text-align:left;font-family:var(--font-sans)}
+.a-tbl thead th{position:sticky;top:0;background:var(--abyss);font:600 12px/16px var(--font-sans);letter-spacing:.14em;text-transform:uppercase;color:var(--ink-muted)}
+.a-tbl td.est{color:var(--ink-muted);font-style:italic}
+.a-tbl tr.sel td:first-child{box-shadow:inset 3px 0 0 var(--blue)}
+.a-source a{color:var(--blue)}
+.a-input input{min-width:4.2ch}
+.a-input__unit{flex:0 1 auto;min-width:0;text-align:right;overflow-wrap:anywhere}
+.a-input input[type="date"]{color-scheme:inherit}
+.a-flabel{font:600 11px/14px var(--font-sans);letter-spacing:.14em;text-transform:uppercase;color:var(--ink-muted)}
+.a-presets--version{margin:0}
+.a-photo[data-filled="true"] .a-photo__ridge,.a-photo[data-filled="true"] .a-photo__status{display:none}
+.a-photo[data-filled="true"] .a-photo__inner{padding:var(--space-3);justify-self:end}
+.a-photo[data-filled="true"] .a-btn{padding:6px 10px;font-size:11px;background:var(--surface);opacity:.85}
+.a-photo[data-filled="true"] .a-btn:hover,.a-photo[data-filled="true"] .a-btn:focus-visible{opacity:1}
+
+.a-foot .a-btn{margin-top:var(--space-2)}
+.a-modal{width:min(760px,calc(100vw - 32px));max-height:calc(100dvh - 48px);padding:0;border:0;background:var(--surface);color:var(--ink);
+  clip-path:polygon(0 0,calc(100% - var(--chamfer-md)) 0,100% var(--chamfer-md),100% 100%,0 100%);font-family:var(--font-sans)}
+.a-modal::backdrop{background:rgba(3,6,12,.7)}
+.a-modal[open]{display:flex;flex-direction:column}
+.a-modal__head{display:flex;align-items:center;justify-content:space-between;gap:var(--space-3);padding:var(--space-5) var(--space-5) var(--space-3);border-bottom:1px solid var(--hairline)}
+.a-modal__head .a-headline{font-size:24px;line-height:26px}
+.a-modal__close{flex:none;width:36px;height:36px;display:grid;place-items:center;border:1px solid var(--border-strong);border-radius:var(--radius-sm);background:transparent;color:var(--ink);cursor:pointer}
+.a-modal__close:hover{background:var(--surface-raised)}
+.a-modal__close:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+.a-modal__close svg{width:12px;height:12px;stroke:currentColor;stroke-width:1.6;fill:none}
+.a-modal__body{overflow-y:auto;padding:var(--space-4) var(--space-5) var(--space-5)}
+.a-modal__h{margin:var(--space-6) 0 var(--space-3);font:700 18px/22px var(--font-display);letter-spacing:.04em;text-transform:uppercase}
+.a-modal__h4{margin:var(--space-4) 0 var(--space-2);font:600 12px/16px var(--font-sans);letter-spacing:.14em;text-transform:uppercase;color:var(--ink-muted)}
+.a-formulas{margin:0}
+.a-formulas dt{font:600 15px/22px var(--font-sans);margin-top:var(--space-4)}
+.a-formulas dd{margin:var(--space-1) 0 0;font:400 14px/21px var(--font-sans);color:var(--ink-muted)}
+.a-modal code{font:500 12.5px/20px var(--font-mono);color:var(--ink);background:var(--surface-raised);padding:1px 5px;border-radius:var(--radius-sm);-webkit-box-decoration-break:clone;box-decoration-break:clone}
+.a-tbl--inline{max-height:none;margin-top:var(--space-3)}
+.a-tbl--inline thead th{background:var(--surface)}
+.a-sources{margin:0;padding-left:1.1em;font:400 14px/21px var(--font-sans);color:var(--ink-muted)}
+.a-sources li{margin-bottom:var(--space-2)}
+.a-modal a{color:var(--blue)}
+@media (max-width:520px){.a-modal{width:100vw;max-width:100vw;max-height:100dvh;height:100dvh;margin:0}
+  .a-modal__head{padding:calc(var(--space-4) + env(safe-area-inset-top,0px)) var(--space-4) var(--space-3)}
+  .a-modal__body{padding:var(--space-3) var(--space-4) calc(var(--space-5) + env(safe-area-inset-bottom,0px))}}
+.a-photo[hidden]{display:none}
+.a-hero--solo{grid-template-columns:minmax(0,1fr)}
+.a-photo[data-filled="true"]{min-height:260px}
+.a-hero--solo .a-duel{max-width:760px}
+
+</style>
+</head>
+<body>
+<div class="a-root" id="app">
+  <div class="a-flag" aria-hidden="true"><span></span><span></span><span></span></div>
+  <div class="a-page">
+
+    <header class="a-top">
+      <div class="a-brand">A290 <span class="a-brand__sub"><span data-v="ch">220</span> ch · Loyer et recharge</span></div>
+      <div class="a-top__meta">
+        <span class="a-chip"><svg class="a-chip__x" viewBox="0 0 10 10" aria-hidden="true"><path d="M1 1L9 9M9 1L1 9"/></svg><span data-k="periodShort"></span></span>
+        <span class="a-chip a-chip--blue" data-k="days"></span>
+        <button class="a-chip a-chip--action" id="theme" type="button" aria-pressed="false">Mode glacier</button>
+      </div>
+    </header>
+
+    <section class="a-intro">
+      <div>
+        <p class="a-label">Alpine A290 <span data-v="ch">220</span> ch</p>
+        <h1 class="a-h1">Contre la pompe</h1>
+      </div>
+      <p class="a-note">Ce que vous auriez payé en carburant, jour après jour, sur les trois derniers mois, face à ce que vous coûtent réellement la recharge et le loyer.</p>
+    </section>
+
+    <section class="a-hero" data-state="saving" aria-label="Verdict">
+      <div class="a-hero__main">
+        <svg class="a-xsig" viewBox="0 0 600 300" aria-hidden="true"><path d="M20 20L250 280M250 20L20 280"/><path d="M350 20L580 280M580 20L350 280"/></svg>
+        <p class="a-label" data-k="heroLabel"></p>
+        <p class="a-hero__figure"><span class="a-hero__num" data-k="heroNum"></span><span class="a-hero__cur">€</span></p>
+        <p class="a-hero__meta"><span data-k="period"></span> · <span data-k="days"></span> · <span data-k="km"></span><br><span data-k="vs"></span></p>
+        <div class="a-duel">
+          <div class="a-duel__row">
+            <span class="a-duel__name">Thermique</span>
+            <div class="a-duel__track" data-w="thermPct"><div class="a-duel__bar a-duel__bar--heat"></div></div>
+            <span class="a-duel__value a-duel__value--heat" data-k="therm"></span>
+          </div>
+          <div class="a-duel__row">
+            <span class="a-duel__name">A290</span>
+            <div class="a-duel__track" data-w="a290Pct"><div class="a-duel__bar a-duel__bar--blue"></div><div class="a-duel__saved"></div></div>
+            <span class="a-duel__value a-duel__value--blue" data-k="a290"></span>
+          </div>
+          <p class="a-duel__note" data-k="breakdown"></p>
+        </div>
+      </div>
+
+      <div class="a-photo" id="photo" data-filled="false">
+        
+      </div>
+    </section>
+
+    <div class="a-dash">
+      <aside class="a-dash__rail">
+        <form class="a-panel a-form" id="params" onsubmit="return false" aria-label="Paramètres">
+          <fieldset class="a-group">
+            <legend>Votre électricité</legend>
+            <div class="a-row">
+              <div class="a-field"><label for="p-kwh">Prix du kWh</label><div class="a-input"><input id="p-kwh" data-p="kwh" inputmode="decimal" value="0,20"><span class="a-input__unit">€/kWh</span></div></div>
+              <div class="a-field"><label for="p-loss">Pertes de recharge</label><div class="a-input"><input id="p-loss" data-p="loss" inputmode="decimal" value="0"><span class="a-input__unit">%</span></div></div>
+            </div>
+            <p class="a-hint">La valeur WLTP est déjà mesurée à la prise : laissez 0 % si vous utilisez la conso officielle.</p>
+            <div class="a-field"><label for="p-abo">Abonnement</label><div class="a-input"><input id="p-abo" data-p="abo" inputmode="decimal" value="0"><span class="a-input__unit">€ TTC/mois</span></div></div>
+            <p class="a-hint">Borne publique ou contrat du domicile. Pour la maison, ne comptez que le surplus dû à la voiture, par exemple le passage à une puissance supérieure.</p>
+          </fieldset>
+
+          <fieldset class="a-group">
+            <legend>L’A290</legend>
+            <div class="a-field"><span class="a-flabel" id="v-lab">Version</span><input type="hidden" id="p-version" data-p="version" value="220"><div class="a-presets a-presets--version" role="group" aria-labelledby="v-lab"><button type="button" class="a-chip a-chip--action" data-version="180" aria-pressed="false">180 ch</button><button type="button" class="a-chip a-chip--action" data-version="220" aria-pressed="true">220 ch</button></div></div>
+            <div class="a-row">
+              <div class="a-field"><label for="p-cons">Consommation</label><div class="a-input"><input id="p-cons" data-p="cons" inputmode="decimal" value="16,5"><span class="a-input__unit">kWh/100 km</span></div></div>
+              <div class="a-field"><label for="p-loa">Loyer</label><div class="a-input"><input id="p-loa" data-p="loa" inputmode="decimal" value="403"><span class="a-input__unit">€ TTC/mois</span></div></div>
+            </div>
+            <div class="a-presets" role="group" aria-label="Consommation prédéfinie">
+              <button type="button" class="a-chip a-chip--action" data-preset="16,5" data-kind="wltp" aria-pressed="true"><span>WLTP officielle <span data-v="wltp">16,5</span></span></button>
+              <button type="button" class="a-chip a-chip--action" data-preset="20" data-kind="real" aria-pressed="false"><span>Usage réel ~<span data-v="real">20</span></span></button>
+            </div>
+          </fieldset>
+
+          <fieldset class="a-group">
+            <legend>La voiture thermique comparée</legend>
+            <div class="a-row">
+              <div class="a-field"><label for="p-fuel">Carburant</label><div class="a-input"><select id="p-fuel" data-p="fuel"><option value="e10">SP95-E10</option><option value="sp98">SP98</option><option value="gazole">Gazole</option><option value="e85">E85</option></select></div></div>
+              <div class="a-field"><label for="p-fuelCons">Consommation</label><div class="a-input"><input id="p-fuelCons" data-p="fuelCons" inputmode="decimal" value="6,5"><span class="a-input__unit">L/100 km</span></div></div>
+            </div>
+            <div class="a-field"><label for="p-iceRent">Loyer ou mensualité</label><div class="a-input"><input id="p-iceRent" data-p="iceRent" inputmode="decimal" value="0"><span class="a-input__unit">€ TTC/mois</span></div></div>
+            <div class="a-row">
+              <div class="a-field"><label for="p-iceAge">Âge aujourd’hui</label><div class="a-input"><input id="p-iceAge" data-p="iceAge" inputmode="decimal" value="5"><span class="a-input__unit">ans</span></div></div>
+              <div class="a-field"><label for="p-icePrice">Prix neuf</label><div class="a-input"><input id="p-icePrice" data-p="icePrice" inputmode="decimal" value="25000"><span class="a-input__unit">€</span></div></div>
+            </div>
+            <div class="a-field"><span class="a-flabel" id="dep-lab">Compter la décote</span><input type="hidden" id="p-depOn" data-p="depOn" value="1"><div class="a-presets a-presets--version" role="group" aria-labelledby="dep-lab"><button type="button" class="a-chip a-chip--action" data-dep="1" aria-pressed="true">Oui, j’en suis propriétaire</button><button type="button" class="a-chip a-chip--action" data-dep="0" aria-pressed="false">Non, location LOA/LLD</button></div></div>
+            <p class="a-hint" data-k="depHint"></p>
+          </fieldset>
+
+          <fieldset class="a-group">
+            <legend>Vos trajets</legend>
+            <div class="a-field"><span class="a-flabel" id="km-lab">Saisir la distance</span><input type="hidden" id="p-kmMode" data-p="kmMode" value="0"><div class="a-presets a-presets--version" role="group" aria-labelledby="km-lab"><button type="button" class="a-chip a-chip--action" data-kmmode="0" aria-pressed="true">Par jour</button><button type="button" class="a-chip a-chip--action" data-kmmode="1" aria-pressed="false">Par an (contrat)</button></div></div><div class="a-field"><label for="p-kmDay" id="km-field-lab">Distance moyenne par jour</label><div class="a-input"><input id="p-kmDay" data-p="kmDay" inputmode="decimal" value="40"><span class="a-input__unit" id="km-unit">km/jour</span></div></div>
+            <div class="a-row">
+              <div class="a-field"><label for="p-from">Du</label><div class="a-input"><input id="p-from" data-p="from" type="date" min="2026-06-21" max="2026-09-21" value="2026-06-21"></div></div>
+              <div class="a-field"><label for="p-to">Au</label><div class="a-input"><input id="p-to" data-p="to" type="date" min="2026-06-21" max="2026-09-21" value="2026-09-21"></div></div>
+            </div>
+          </fieldset>
+        </form>
+      </aside>
+
+      <main class="a-dash__main">
+        <section class="a-stats" aria-label="Chiffres clés">
+          <div class="a-stat"><p class="a-label">Économie sur l’énergie seule</p><p class="a-stat__value a-stat__value--blue" data-k="energySaving"></p></div>
+          <div class="a-stat"><p class="a-label">Bilan net projeté sur un an</p><p class="a-stat__value" data-k="projYear"></p></div>
+          <div class="a-stat"><p class="a-label">Kilomètres parcourus</p><p class="a-stat__value"><span data-k="kmValue"></span><span class="a-stat__unit">km</span></p></div>
+          <div class="a-stat a-stat--wide">
+            <p class="a-label">Énergie aux 100 km</p>
+            <div class="a-stat__pair">
+              <div><span class="a-stat__who a-stat__who--blue">A290</span><p class="a-stat__value a-stat__value--blue" data-k="per100A"></p></div>
+              <div><span class="a-stat__who a-stat__who--heat">Thermique (moy.)</span><p class="a-stat__value a-stat__value--heat" data-k="per100T"></p></div>
+            </div>
+          </div>
+          <div class="a-stat"><p class="a-label">Loyers sur la période</p><p class="a-stat__value" data-k="loaTotal"></p></div>
+          <div class="a-stat a-stat--wide"><p class="a-label">Distance pour que l’énergie paie le loyer</p><p class="a-stat__value a-stat__value--text" data-k="breakeven"></p></div>
+          <div class="a-stat"><p class="a-label">Prix du kWh qui égaliserait la pompe</p><p class="a-stat__value"><span data-k="parity"></span><span class="a-stat__unit">€/kWh</span></p></div>
+        </section>
+
+        <section aria-label="Coût cumulé">
+          <div class="a-section-head">
+            <h2 class="a-headline">Coût cumulé, jour par jour</h2>
+            <p class="a-note">Le loyer est réparti jour par jour. Tant que la courbe bleue est au-dessus, l’A290 coûte plus cher que la thermique.</p>
+          </div>
+          <ul class="a-legend">
+            <li class="is-heat"><i></i><span>Thermique (carburant du jour, loyer et décote)</span></li>
+            <li class="is-blue"><i></i><span>A290 (électricité, abonnement et loyer au prorata)</span></li>
+            <li class="is-price"><i></i><span>Prix moyens nationaux quotidiens (€/L)</span></li>
+          </ul>
+          <div class="a-chart" id="chart"></div>
+        </section>
+      </main>
+    </div>
+
+    <section class="a-prices" aria-label="Prix quotidiens">
+      <details>
+        <summary class="a-headline">Prix moyens nationaux quotidiens</summary>
+        <p class="a-note">Valeurs droites : moyennes calculées ou relevées ce jour-là. Valeurs en italique : jour sans donnée, estimé par interpolation linéaire entre les deux jours voisins. En €/L.</p>
+        <div class="a-tbl"><table>
+          <thead><tr><th>Date</th><th>SP95-E10</th><th>SP98</th><th>Gazole</th><th>E85</th></tr></thead>
+          <tbody id="tbody"></tbody>
+        </table></div>
+      </details>
+    </section>
+    <footer class="a-foot">
+      <p class="a-source">Prix : moyennes nationales quotidiennes calculées chaque matin à partir du <a href="https://www.prix-carburants.gouv.fr/rubrique/opendata/" target="_blank" rel="noopener">flux open data officiel du ministère de l’Économie</a>. Dernière mise à jour : <span data-upd></span>. Consommation WLTP officielle : 15,8 kWh/100 km pour l’A290 180 ch, 16,5 kWh/100 km pour la 220 ch (<a href="https://www.alpinecars.fr/modeles-electriques/a290.html" target="_blank" rel="noopener">alpinecars.fr</a>).</p>
+      <p class="a-source"><button type="button" class="a-btn a-btn--ghost" id="open-method">Formules de calcul et sources détaillées</button></p>
+    </footer>
+
+    <dialog class="a-modal" id="method" aria-labelledby="method-title">
+      <div class="a-modal__head">
+        <h2 class="a-headline" id="method-title">Comment tout est calculé</h2>
+        <button type="button" class="a-modal__close" id="close-method" aria-label="Fermer">
+          <svg viewBox="0 0 10 10" aria-hidden="true"><path d="M1 1L9 9M9 1L1 9"/></svg>
+        </button>
+      </div>
+      <div class="a-modal__body">
+        <p class="a-note">Chaque indicateur est calculé jour par jour sur la période choisie, puis additionné. Les montants mensuels (loyers, abonnement) sont convertis en montant journalier : mensuel × 12 ÷ 365.</p>
+
+        <h3 class="a-modal__h">Les briques de base</h3>
+        <dl class="a-formulas">
+          <dt>Distance par jour</dt>
+          <dd><code>km/jour saisis</code> ou <code>kilométrage annuel ÷ 365</code></dd>
+          <dt>Énergie de l’A290 par km</dt>
+          <dd><code>consommation (kWh/100 km) ÷ 100 ÷ (1 − pertes de recharge)</code></dd>
+          <dt>Électricité du jour</dt>
+          <dd><code>km/jour × kWh par km × prix du kWh + abonnement × 12 ÷ 365</code></dd>
+          <dt>Carburant du jour</dt>
+          <dd><code>km/jour × consommation (L/100 km) ÷ 100 × prix moyen national du jour</code></dd>
+          <dt>Décote du jour (thermique)</dt>
+          <dd><code>prix neuf × (valeur résiduelle à l’âge de la veille − valeur résiduelle à l’âge du jour)</code>. L’âge saisi est celui du dernier jour de données ; il est reculé d’un jour pour chaque jour antérieur. Mise à 0 en mode location.</dd>
+        </dl>
+
+        <h3 class="a-modal__h">Les indicateurs affichés</h3>
+        <dl class="a-formulas">
+          <dt>Verdict (économisé ou surcoût)</dt>
+          <dd><code>Σ thermique (carburant + loyer + décote) − Σ A290 (électricité + abonnement + loyer)</code>. Positif : l’A290 vous fait économiser.</dd>
+          <dt>Économie sur l’énergie seule</dt>
+          <dd><code>Σ carburant − Σ (électricité + abonnement)</code>, sans aucun loyer ni décote.</dd>
+          <dt>Bilan net projeté sur un an</dt>
+          <dd><code>verdict ÷ nombre de jours × 365</code>. Suppose que les prix de la période se maintiennent toute l’année.</dd>
+          <dt>Énergie aux 100 km</dt>
+          <dd>A290 : <code>Σ (électricité + abonnement) ÷ km parcourus × 100</code>. Thermique : <code>consommation × prix moyen du carburant sur la période</code>.</dd>
+          <dt>Distance pour que l’énergie paie le loyer</dt>
+          <dd><code>(loyer A290 + abonnement − loyer thermique − décote moyenne) par jour ÷ (gain d’énergie par km)</code>, avec <code>gain par km = consommation thermique ÷ 100 × prix moyen − kWh par km × prix du kWh</code>. Converti en km/an (arrondi à la centaine) en mode annuel. « Jamais » si le kWh coûte plus cher au km que le carburant.</dd>
+          <dt>Prix du kWh qui égaliserait la pompe</dt>
+          <dd><code>(consommation thermique ÷ 100 × prix moyen − abonnement du jour ÷ km/jour) ÷ kWh par km</code>. Au-delà de ce prix, rouler en A290 coûte plus cher en énergie que la thermique.</dd>
+          <dt>Courbes du graphique</dt>
+          <dd>Cumul jour après jour des deux totaux ci-dessus. Le bandeau inférieur trace le prix du carburant choisi, entre son minimum et son maximum sur la période.</dd>
+        </dl>
+
+        <h3 class="a-modal__h">Prix du carburant</h3>
+        <p class="a-note">Chaque matin, un robot télécharge le flux officiel des prix déclarés par toutes les stations-service de France. Pour chaque carburant, il garde le dernier prix de chaque station, écarte les prix non mis à jour depuis plus de 7 jours et les valeurs aberrantes, puis fait la moyenne : <code>prix moyen du jour = Σ prix des stations ÷ nombre de stations</code>. La page affiche les 93 derniers jours. Un jour sans donnée est estimé par interpolation linéaire entre les deux jours voisins et apparaît en italique dans le tableau.</p>
+
+        <h3 class="a-modal__h">Barème de décote</h3>
+        <p class="a-note">Valeur résiduelle moyenne en % du prix neuf, interpolée linéairement entre les points. Tendance nationale tous modèles thermiques confondus, pas une cote de votre modèle.</p>
+        <div class="a-tbl a-tbl--inline"><table>
+          <thead><tr><th>Âge</th><th>1 an</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th><th>7</th><th>8</th><th>10</th><th>12</th><th>15</th><th>20</th></tr></thead>
+          <tbody><tr><td>Valeur</td><td>78 %</td><td>67 %</td><td>58 %</td><td>51 %</td><td>45 %</td><td>40 %</td><td>36 %</td><td>32 %</td><td>26 %</td><td>21 %</td><td>16 %</td><td>10 %</td></tr></tbody>
+        </table></div>
+
+        <h3 class="a-modal__h">Sources</h3>
+        <h4 class="a-modal__h4">Prix des carburants</h4>
+        <ul class="a-sources">
+          <li><a href="https://www.prix-carburants.gouv.fr/rubrique/opendata/" target="_blank" rel="noopener">Prix des carburants, données publiques</a> : flux instantané (calcul quotidien) et stock annuel (historique), ministère de l’Économie.</li>
+          <li><a href="https://data.economie.gouv.fr/explore/dataset/prix-carburants-quotidien/table/" target="_blank" rel="noopener">data.economie.gouv.fr, flux quotidien</a> : la même source, consultable en ligne.</li>
+          <li>Premières valeurs, avant le premier calcul automatique : relevés publiés par <a href="https://data.roole.fr/budget-auto/prix-des-carburants/prix-moyen-des-carburants" target="_blank" rel="noopener">Roole Data</a> et <a href="https://prix-carburant.eu/statistiques-prix-carburants-france/" target="_blank" rel="noopener">prix-carburant.eu</a>.</li>
+        </ul>
+        <h4 class="a-modal__h4">Alpine A290</h4>
+        <ul class="a-sources">
+          <li><a href="https://www.alpinecars.fr/modeles-electriques/a290.html" target="_blank" rel="noopener">Alpine, fiche A290</a> : consommation mixte WLTP de 15,8 kWh/100 km (180 ch) et 16,5 kWh/100 km (220 ch).</li>
+          <li><a href="https://www.autoscout24.fr/informer/essai/alpine/a290/essai-alpine-a290-2025/" target="_blank" rel="noopener">AutoScout24, essai de l’A290 GTS</a> : 20,1 kWh/100 km en moyenne sur une semaine, base du préréglage « usage réel » de la 220 ch. Le préréglage de la 180 ch (~19) est une estimation, faute de mesure publiée.</li>
+        </ul>
+        <h4 class="a-modal__h4">Décote</h4>
+        <ul class="a-sources">
+          <li><a href="https://www.autoestim.com/guides/decote-voiture" target="_blank" rel="noopener">AutoEstim, barème de décote 2026</a></li>
+          <li><a href="https://lejournalauto.com/categorie/occasion/decote-voiture-calcul-pourcentage-annee-modeles-2026" target="_blank" rel="noopener">Le JournalAuto, décote 2026</a> : écart diesel et modèles qui résistent.</li>
+          <li><a href="https://www.vendezvotrevoiture.fr/estimer-sa-voiture/decote-voiture/" target="_blank" rel="noopener">Vendez votre voiture, calcul de la décote</a></li>
+          <li><a href="https://www.verdy-garage.fr/comment-calculer-la-decote-dune-voiture-methode-et-simulateur/" target="_blank" rel="noopener">Verdy Garage, décote après 10 ans</a></li>
+          <li><a href="https://www.autohero.com/fr/conseil/choisir/voiture-petit-budget/voiture-qui-decote-le-moins/" target="_blank" rel="noopener">Autohero, voitures qui décotent le moins</a></li>
+        </ul>
+        <p class="a-note">Prix mis à jour le <span data-upd></span>. Ces calculs donnent un ordre de grandeur ; ils ne remplacent ni une cote Argus ni un conseil financier.</p>
+      </div>
+    </dialog>
+
+  </div>
+</div>
+
+
+<script>
+(function () {
+  "use strict";
+
+  /* A290 contre la pompe: model, formatting and chart for the dashboard.
+     window.A290 = { DEFAULTS, model(params), fmt, bind(root, model), costChart(el, model) }.
+     Prototype note: the daily fuel price is a reconstructed curve calibrated so the default
+     period lands on the figures of the calculator (986,71 EUR of fuel, 187,67 EUR of electricity).
+     Plug the real daily prices into `fuelPrice` (or replace `model().series`) in production. */
+
+  var SVG = "http://www.w3.org/2000/svg";
+  var DAY = 86400000;
+  var NBSP = " ";
+
+  var DEFAULTS = {
+    kwh: 0.1853,
+    loss: 0,
+    cons: 16.5,
+    loa: 0,
+    fuel: "SP95-E10",
+    fuelCons: 8,
+    kmDay: 66,
+    from: "2026-06-21",
+    to: "2026-09-21"
+  };
+
+  /* ---------- formatting (fr-FR) ---------- */
+  var nfCache = {};
+  function num(n, min, max) {
+    var k = min + "/" + max;
+    if (!nfCache[k]) nfCache[k] = new Intl.NumberFormat("fr-FR", { minimumFractionDigits: min, maximumFractionDigits: max });
+    return nfCache[k].format(n);
+  }
+  var dfLong = new Intl.DateTimeFormat("fr-FR", { day: "numeric", month: "long", timeZone: "UTC" });
+  var dfShort = new Intl.DateTimeFormat("fr-FR", { day: "numeric", month: "short", timeZone: "UTC" });
+  var fmt = {
+    num: num,
+    eur2: function (n) { return num(n, 2, 2) + NBSP + "€"; },
+    eur0: function (n) { return num(n, 0, 0) + NBSP + "€"; },
+    int: function (n) { return num(n, 0, 0); },
+    dec: function (n, d) { return num(n, d, d); },
+    dateLong: function (ms) { return dfLong.format(new Date(ms)); },
+    dateShort: function (ms) { return dfShort.format(new Date(ms)); }
+  };
+
+  function parseDate(s) {
+    var m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(String(s));
+    return m ? Date.UTC(+m[1], +m[2] - 1, +m[3]) : NaN;
+  }
+
+  /* ---------- reconstructed daily fuel price (EUR/L) ---------- */
+  var REF_FROM = Date.UTC(2026, 5, 21);
+  function rawPrice(d) {
+    return 1 + 0.028 * Math.sin(d / 10.5) + 0.011 * Math.sin(d / 3.1 + 1) + 0.0002 * (d - 46);
+  }
+  var TARGET_THERM = 986.7101;
+  var TARGET_ELEC = 187.665;
+  var sumRaw = 0;
+  for (var i0 = 0; i0 < 93; i0++) sumRaw += rawPrice(i0);
+  var PRICE_SCALE = TARGET_THERM / (66 * 8 / 100 * sumRaw);
+  var ECAL = TARGET_ELEC / (6138 * 16.5 / 100 * 0.1853);
+  function fuelPrice(d) { return PRICE_SCALE * rawPrice(d); }
+
+  /* ---------- model ---------- */
+  function model(input) {
+    var p = {};
+    var k;
+    for (k in DEFAULTS) p[k] = DEFAULTS[k];
+    if (input) for (k in input) if (input[k] !== undefined && input[k] !== "") p[k] = input[k];
+    ["kwh", "loss", "cons", "loa", "fuelCons", "kmDay"].forEach(function (key) {
+      p[key] = Math.max(0, Number(p[key]) || 0);
+    });
+    var t0 = parseDate(p.from), t1 = parseDate(p.to);
+    if (isNaN(t0)) t0 = parseDate(DEFAULTS.from);
+    if (isNaN(t1) || t1 < t0) t1 = t0;
+    var days = Math.round((t1 - t0) / DAY) + 1;
+    var km = days * p.kmDay;
+
+    var elecDay = p.kmDay * p.cons / 100 * (1 + p.loss / 100) * p.kwh * ECAL;
+    var loaDay = p.loa * 12 / 365;
+    var litresDay = p.kmDay * p.fuelCons / 100;
+
+    var cumT = [0], cumA = [0], prices = [];
+    var t = 0;
+    for (var i = 0; i < days; i++) {
+      var d = (t0 + i * DAY - REF_FROM) / DAY;
+      var price = fuelPrice(d);
+      prices.push(price);
+      t += litresDay * price;
+      cumT.push(t);
+      cumA.push((i + 1) * (elecDay + loaDay));
+    }
+    var therm = t;
+    var elec = elecDay * days;
+    var loaTotal = loaDay * days;
+    var a290 = elec + loaTotal;
+    var saving = therm - a290;
+    var energySaving = therm - elec;
+    var kwhTotal = km * p.cons / 100 * (1 + p.loss / 100) * ECAL;
+    var parity = kwhTotal > 0 ? therm / kwhTotal : 0;
+    var savePerKm = km > 0 ? energySaving / km : 0;
+    var breakeven;
+    if (p.loa <= 0) breakeven = "dès le 1er km";
+    else if (savePerKm <= 0) breakeven = "jamais";
+    else breakeven = fmt.int(Math.ceil(p.loa / savePerKm)) + NBSP + "km/mois";
+    var top = Math.max(therm, a290, 1);
+
+    var f = {
+      heroNum: fmt.int(Math.abs(saving)),
+      heroCur: "€",
+      heroLabel: saving >= 0 ? "Économisé, loyer compris" : "Surcoût, loyer compris",
+      period: "Du " + fmt.dateLong(t0) + " au " + fmt.dateLong(t1),
+      days: fmt.int(days) + NBSP + "jours",
+      km: fmt.int(km) + NBSP + "km",
+      vs: "comparé à une voiture " + p.fuel + " à " + fmt.dec(p.fuelCons, 1) + NBSP + "L/100" + NBSP + "km",
+      fuel: p.fuel,
+      therm: fmt.eur2(therm),
+      a290: fmt.eur2(a290),
+      saved: fmt.eur2(Math.abs(saving)),
+      breakdown: "A290 : " + fmt.eur2(elec) + " d’électricité + " + fmt.eur2(loaTotal) + " de LOA. Thermique : " + fmt.eur2(therm) + " de carburant.",
+      energySaving: fmt.eur2(energySaving),
+      loaTotal: fmt.eur0(loaTotal),
+      breakeven: breakeven,
+      kmValue: fmt.int(km),
+      per100A: fmt.eur2(km > 0 ? a290 / km * 100 : 0),
+      per100T: fmt.eur2(km > 0 ? therm / km * 100 : 0),
+      projYear: fmt.eur0(days > 0 ? saving / days * 365 : 0),
+      parity: fmt.dec(parity, 3),
+      periodShort: fmt.dateShort(t0) + " – " + fmt.dateShort(t1)
+    };
+    return {
+      params: p, t0: t0, t1: t1, days: days, km: km,
+      therm: therm, a290: a290, elec: elec, loaTotal: loaTotal,
+      saving: saving, energySaving: energySaving,
+      thermPct: therm / top * 100, a290Pct: a290 / top * 100,
+      cumT: cumT, cumA: cumA, prices: prices,
+      state: saving >= 0 ? "saving" : "deficit",
+      f: f
+    };
+  }
+
+  /* ---------- bind: data-k text, data-w bar width, data-state ---------- */
+  function bind(root, m) {
+    var i, els = root.querySelectorAll("[data-k]");
+    for (i = 0; i < els.length; i++) {
+      var key = els[i].getAttribute("data-k");
+      if (m.f[key] !== undefined) els[i].textContent = m.f[key];
+    }
+    els = root.querySelectorAll("[data-w]");
+    for (i = 0; i < els.length; i++) {
+      var w = m[els[i].getAttribute("data-w")];
+      if (typeof w === "number") els[i].style.setProperty("--w", Math.max(0, Math.min(100, w)).toFixed(2) + "%");
+    }
+    els = root.querySelectorAll("[data-state]");
+    for (i = 0; i < els.length; i++) els[i].setAttribute("data-state", m.state);
+  }
+
+  /* ---------- chart ---------- */
+  function el(tag, attrs, parent) {
+    var n = document.createElementNS(SVG, tag);
+    if (attrs) for (var k in attrs) n.setAttribute(k, attrs[k]);
+    if (parent) parent.appendChild(n);
+    return n;
+  }
+  function txt(parent, cls, x, y, s) {
+    var n = el("text", { "class": cls, x: x, y: y }, parent);
+    n.textContent = s;
+    return n;
+  }
+  function niceStep(max) {
+    var steps = [10, 20, 50, 100, 200, 250, 500, 1000, 2000, 5000, 10000];
+    for (var i = 0; i < steps.length; i++) if (max / steps[i] <= 3) return steps[i];
+    return 20000;
+  }
+
+  function costChart(host, m) {
+    host.textContent = "";
+    host.__a290 = m;
+    if (!host.__a290ro && typeof ResizeObserver !== "undefined") {
+      var lastW = host.clientWidth;
+      host.__a290ro = new ResizeObserver(function () {
+        if (Math.abs(host.clientWidth - lastW) > 8) { lastW = host.clientWidth; costChart(host, host.__a290); }
+      });
+      host.__a290ro.observe(host);
+    }
+    var W = Math.max(320, Math.min(1200, Math.round(host.clientWidth || 960))), H = 392;
+    var narrow = W < 640;
+    var L = narrow ? 52 : 60, R = narrow ? 92 : 112, T = 20;
+    var mainB = 252, stripT = 292, stripB = 340, axisY = 370;
+    var pw = W - L - R;
+    var n = m.days;
+    var step = niceStep(Math.max(m.therm, m.a290, 1));
+    var yMax = Math.ceil(Math.max(m.therm, m.a290, 1) / step) * step;
+    function X(j) { return L + j / n * pw; }
+    function Y(v) { return mainB - v / yMax * (mainB - T); }
+
+    var svg = el("svg", { viewBox: "0 0 " + W + " " + H, role: "img",
+      "aria-label": "Coût cumulé sur " + n + " jours : thermique " + m.f.therm + ", A290 " + m.f.a290 + "." }, host);
+
+    /* grid + y ticks */
+    for (var v = 0; v <= yMax + 0.001; v += step) {
+      el("line", { "class": v === 0 ? "c-axis" : "c-grid", x1: L, x2: W - R, y1: Y(v), y2: Y(v) }, svg);
+      txt(svg, "c-tick c-tick--end", L - 10, Y(v) + 4, fmt.eur0(v));
+    }
+
+    /* x ticks: first day, first of each month, last day */
+    var ticks = [{ j: 0, ms: m.t0 }];
+    for (var j = 1; j < n; j++) {
+      var ms = m.t0 + j * DAY;
+      if (new Date(ms).getUTCDate() === 1) ticks.push({ j: j, ms: ms });
+    }
+    var lastX = -999;
+    ticks.forEach(function (tk) {
+      var x = X(tk.j);
+      if (x - lastX < 76) return;
+      lastX = x;
+      el("line", { "class": "c-axis", x1: x, x2: x, y1: mainB, y2: mainB + 5 }, svg);
+      txt(svg, "c-tick " + (tk.j === 0 ? "" : "c-tick--mid"), x, axisY, fmt.dateShort(tk.ms));
+    });
+    var endX = X(n);
+    if (endX - lastX >= 76) txt(svg, "c-tick c-tick--end", endX, axisY, fmt.dateShort(m.t1));
+
+    /* saving area between the curves */
+    var ptsT = [], ptsA = [];
+    for (var i = 0; i <= n; i++) { ptsT.push(X(i).toFixed(1) + "," + Y(m.cumT[i]).toFixed(1)); ptsA.push(X(i).toFixed(1) + "," + Y(m.cumA[i]).toFixed(1)); }
+    el("polygon", { "class": "c-saving" + (m.state === "deficit" ? " c-saving--deficit" : ""), points: ptsT.join(" ") + " " + ptsA.slice().reverse().join(" ") }, svg);
+
+    /* curves */
+    el("polyline", { "class": "c-line c-line--heat", points: ptsT.join(" ") }, svg);
+    el("polyline", { "class": "c-line c-line--blue", points: ptsA.join(" ") }, svg);
+
+    /* end markers: an X, like the light signature */
+    var yT = Y(m.therm), yA = Y(m.a290);
+    [[yT, "heat"], [yA, "blue"]].forEach(function (e) {
+      el("circle", { "class": "c-halo", cx: endX, cy: e[0], r: 11 }, svg);
+      el("path", { "class": "c-x c-x--" + e[1], d: "M" + (endX - 5) + "," + (e[0] - 5) + "L" + (endX + 5) + "," + (e[0] + 5) + "M" + (endX + 5) + "," + (e[0] - 5) + "L" + (endX - 5) + "," + (e[0] + 5) }, svg);
+    });
+
+    /* end labels (kept apart) */
+    var lt = yT, la = yA;
+    if (Math.abs(lt - la) < 22) { if (lt <= la) { lt -= 11; la += 11; } else { lt += 11; la -= 11; } }
+    txt(svg, "c-endlab c-endlab--heat", endX + 14, lt + 7, m.f.therm);
+    txt(svg, "c-endlab c-endlab--blue", endX + 14, la + 7, m.f.a290);
+
+    /* gap dimension line */
+    if (Math.abs(yT - yA) > 44) {
+      var gx = endX - 26, y1 = Math.min(yT, yA) + 8, y2 = Math.max(yT, yA) - 8;
+      el("path", { "class": "c-gap", d: "M" + gx + "," + y1 + "L" + gx + "," + y2 + "M" + (gx - 4) + "," + y1 + "L" + (gx + 4) + "," + y1 + "M" + (gx - 4) + "," + y2 + "L" + (gx + 4) + "," + y2 }, svg);
+      txt(svg, "c-gaplab", gx - 10, (y1 + y2) / 2 + 4, (m.state === "deficit" ? "+" : "−") + m.f.saved);
+    }
+
+    /* price strip */
+    el("rect", { "class": "c-strip", x: L, y: stripT, width: pw, height: stripB - stripT }, svg);
+    var pmin = Math.min.apply(null, m.prices), pmax = Math.max.apply(null, m.prices);
+    var span = Math.max(pmax - pmin, 0.001);
+    function PY(p) { return stripB - 6 - (p - pmin) / span * (stripB - stripT - 12); }
+    var pp = m.prices.map(function (p, i) { return X(i + 0.5).toFixed(1) + "," + PY(p).toFixed(1); });
+    el("polyline", { "class": "c-line c-line--price", points: pp.join(" ") }, svg);
+    txt(svg, "c-tick c-tick--end", L - 10, PY(pmax) + 4, fmt.dec(pmax, 2));
+    txt(svg, "c-tick c-tick--end", L - 10, PY(pmin) + 4, fmt.dec(pmin, 2));
+    txt(svg, "c-tick", endX + 16, (stripT + stripB) / 2 + 4, "€/L");
+
+    /* hover */
+    var hov = el("g", { visibility: "hidden" }, svg);
+    var cursor = el("line", { "class": "c-cursor", y1: T, y2: stripB, x1: 0, x2: 0 }, hov);
+    var dT = el("circle", { "class": "c-dot c-dot--heat", r: 5, cx: 0, cy: 0 }, hov);
+    var dA = el("circle", { "class": "c-dot c-dot--blue", r: 5, cx: 0, cy: 0 }, hov);
+    var tip = document.createElement("div");
+    tip.className = "a-tip";
+    tip.hidden = true;
+    host.appendChild(tip);
+    var hit = el("rect", { x: L, y: T, width: pw, height: stripB - T, fill: "transparent" }, svg);
+
+    function show(ev) {
+      var r = svg.getBoundingClientRect();
+      var scale = r.width / W;
+      var px = (ev.clientX - r.left) / scale;
+      var i = Math.max(1, Math.min(n, Math.round((px - L) / pw * n)));
+      var x = X(i);
+      cursor.setAttribute("x1", x); cursor.setAttribute("x2", x);
+      dT.setAttribute("cx", x); dT.setAttribute("cy", Y(m.cumT[i]));
+      dA.setAttribute("cx", x); dA.setAttribute("cy", Y(m.cumA[i]));
+      var diff = m.cumT[i] - m.cumA[i];
+      tip.innerHTML = "<b>" + fmt.dateLong(m.t0 + (i - 1) * DAY) + "</b>" +
+        "<div class=\"is-heat\"><span>Thermique</span><span>" + fmt.eur2(m.cumT[i]) + "</span></div>" +
+        "<div class=\"is-blue\"><span>A290</span><span>" + fmt.eur2(m.cumA[i]) + "</span></div>" +
+        "<div><span>" + (diff >= 0 ? "Écart" : "Surcoût") + "</span><span>" + fmt.eur2(Math.abs(diff)) + "</span></div>";
+      tip.hidden = false;
+      hov.setAttribute("visibility", "visible");
+      var tw = tip.offsetWidth;
+      var left = x * scale + 14;
+      if (left + tw > r.width) left = x * scale - tw - 14;
+      tip.style.left = Math.max(0, left) + "px";
+      tip.style.top = (T * scale + 8) + "px";
+    }
+    function hide() {
+      tip.hidden = true;
+      hov.setAttribute("visibility", "hidden");
+    }
+    hit.addEventListener("pointermove", show);
+    hit.addEventListener("pointerdown", show);
+    hit.addEventListener("pointerleave", hide);
+    return svg;
+  }
+
+  /* ---------- photo slot: shows the chosen image, keeps the file name ---------- */
+  function bindPhoto(slot) {
+    var input = slot.querySelector("input[type=file]");
+    var status = slot.querySelector(".a-photo__status");
+    if (!input) return;
+    input.addEventListener("change", function () {
+      var file = input.files && input.files[0];
+      if (!file) {
+        slot.setAttribute("data-filled", "false");
+        slot.style.backgroundImage = "";
+        if (status) status.textContent = "Aucun fichier choisi";
+        return;
+      }
+      var reader = new FileReader();
+      reader.onload = function () {
+        slot.style.backgroundImage = "url(\"" + reader.result + "\")";
+        slot.setAttribute("data-filled", "true");
+        if (status) status.textContent = file.name;
+      };
+      reader.readAsDataURL(file);
+    });
+  }
+
+  /* ---------- parameters: read the fields of a .a-form into model input ---------- */
+  function readParams(root) {
+    var out = {};
+    var els = root.querySelectorAll("[data-p]");
+    for (var i = 0; i < els.length; i++) {
+      var key = els[i].getAttribute("data-p");
+      var v = els[i].value;
+      out[key] = (key === "from" || key === "to" || key === "fuel") ? v : parseFloat(String(v).replace(/\s/g, "").replace(",", "."));
+      if (typeof out[key] === "number" && isNaN(out[key])) out[key] = 0;
+    }
+    return out;
+  }
+
+  window.A290 = { DEFAULTS: DEFAULTS, model: model, fmt: fmt, bind: bind, costChart: costChart, bindPhoto: bindPhoto, readParams: readParams };
+})();
+
+</script>
+<script>
+(function () {
+  "use strict";
+  var F = A290.fmt, NBSP = "\u00a0", DAY = 86400000;
+
+  // Prix : data/prix.json (mis à jour chaque jour par GitHub Actions), avec une copie de secours intégrée
+  var FALLBACK = {"updated":"2026-09-21T22:30+02:00","source":"Relevés publiés (Roole Data, prix-carburant.eu) en attendant le premier calcul officiel","method":"Relevés publiés ; jours manquants estimés par interpolation","days":[{"date":"2026-06-21","e10":1.9115,"sp98":2.015,"gazole":1.927,"e85":0.839,"est":["e10","sp98","gazole","e85"]},{"date":"2026-06-22","e10":1.9087,"sp98":2.013,"gazole":1.9217,"e85":0.839,"est":["e10","sp98","gazole","e85"]},{"date":"2026-06-23","e10":1.9058,"sp98":2.011,"gazole":1.9163,"e85":0.839,"est":["e10","sp98","gazole","e85"]},{"date":"2026-06-24","e10":1.903,"sp98":2.009,"gazole":1.911,"e85":0.839,"est":["e85"]},{"date":"2026-06-25","e10":1.897,"sp98":2.004,"gazole":1.904,"e85":0.839},{"date":"2026-06-26","e10":1.8976,"sp98":2.0032,"gazole":1.9026,"e85":0.8388,"est":["e10","sp98","gazole","e85"]},{"date":"2026-06-27","e10":1.8982,"sp98":2.0024,"gazole":1.9012,"e85":0.8386,"est":["e10","sp98","gazole","e85"]},{"date":"2026-06-28","e10":1.8988,"sp98":2.0016,"gazole":1.8998,"e85":0.8384,"est":["e10","sp98","gazole","e85"]},{"date":"2026-06-29","e10":1.8994,"sp98":2.0008,"gazole":1.8984,"e85":0.8382,"est":["e10","sp98","gazole","e85"]},{"date":"2026-06-30","e10":1.9,"sp98":2.0,"gazole":1.897,"e85":0.838},{"date":"2026-07-01","e10":1.901,"sp98":1.999,"gazole":1.9,"e85":0.838},{"date":"2026-07-02","e10":1.903,"sp98":1.999,"gazole":1.902,"e85":0.8383,"est":["e85"]},{"date":"2026-07-03","e10":1.902,"sp98":1.998,"gazole":1.901,"e85":0.8385,"est":["e85"]},{"date":"2026-07-04","e10":1.9055,"sp98":2.0001,"gazole":1.9098,"e85":0.8388,"est":["e10","sp98","gazole","e85"]},{"date":"2026-07-05","e10":1.9091,"sp98":2.0022,"gazole":1.9185,"e85":0.8391,"est":["e10","sp98","gazole","e85"]},{"date":"2026-07-06","e10":1.9126,"sp98":2.0042,"gazole":1.9273,"e85":0.8393,"est":["e10","sp98","gazole","e85"]},{"date":"2026-07-07","e10":1.9162,"sp98":2.0063,"gazole":1.9361,"e85":0.8396,"est":["e10","sp98","gazole","e85"]},{"date":"2026-07-08","e10":1.9197,"sp98":2.0084,"gazole":1.9448,"e85":0.8399,"est":["e10","sp98","gazole","e85"]},{"date":"2026-07-09","e10":1.9232,"sp98":2.0105,"gazole":1.9536,"e85":0.8401,"est":["e10","sp98","gazole","e85"]},{"date":"2026-07-10","e10":1.9268,"sp98":2.0125,"gazole":1.9624,"e85":0.8404,"est":["e10","sp98","gazole","e85"]},{"date":"2026-07-11","e10":1.9303,"sp98":2.0146,"gazole":1.9712,"e85":0.8407,"est":["e10","sp98","gazole","e85"]},{"date":"2026-07-12","e10":1.9338,"sp98":2.0167,"gazole":1.9799,"e85":0.8409,"est":["e10","sp98","gazole","e85"]},{"date":"2026-07-13","e10":1.9374,"sp98":2.0188,"gazole":1.9887,"e85":0.8412,"est":["e10","sp98","gazole","e85"]},{"date":"2026-07-14","e10":1.9409,"sp98":2.0208,"gazole":1.9975,"e85":0.8415,"est":["e10","sp98","gazole","e85"]},{"date":"2026-07-15","e10":1.9445,"sp98":2.0229,"gazole":2.0062,"e85":0.8417,"est":["e10","sp98","gazole","e85"]},{"date":"2026-07-16","e10":1.948,"sp98":2.025,"gazole":2.015,"e85":0.842},{"date":"2026-07-17","e10":1.967,"sp98":2.049,"gazole":2.049,"e85":0.843},{"date":"2026-07-18","e10":1.9728,"sp98":2.0573,"gazole":2.066,"e85":0.8441,"est":["e10","sp98","gazole","e85"]},{"date":"2026-07-19","e10":1.9786,"sp98":2.0657,"gazole":2.083,"e85":0.8451,"est":["e10","sp98","gazole","e85"]},{"date":"2026-07-20","e10":1.9845,"sp98":2.074,"gazole":2.1,"e85":0.8462,"est":["e10","sp98","gazole","e85"]},{"date":"2026-07-21","e10":1.9903,"sp98":2.0823,"gazole":2.117,"e85":0.8473,"est":["e10","sp98","gazole","e85"]},{"date":"2026-07-22","e10":1.9961,"sp98":2.0907,"gazole":2.134,"e85":0.8484,"est":["e10","sp98","e85"]},{"date":"2026-07-23","e10":2.0019,"sp98":2.099,"gazole":2.144,"e85":0.8494,"est":["e10","e85"]},{"date":"2026-07-24","e10":2.0077,"sp98":2.096,"gazole":2.155,"e85":0.8505,"est":["e10","gazole","e85"]},{"date":"2026-07-25","e10":2.0135,"sp98":2.0983,"gazole":2.166,"e85":0.8516,"est":["e10","sp98","gazole","e85"]},{"date":"2026-07-26","e10":2.0194,"sp98":2.1006,"gazole":2.177,"e85":0.8526,"est":["e10","sp98","gazole","e85"]},{"date":"2026-07-27","e10":2.0252,"sp98":2.1029,"gazole":2.188,"e85":0.8537,"est":["e10","sp98","gazole","e85"]},{"date":"2026-07-28","e10":2.031,"sp98":2.1051,"gazole":2.199,"e85":0.8548,"est":["sp98","e85"]},{"date":"2026-07-29","e10":2.029,"sp98":2.1074,"gazole":2.203,"e85":0.8559,"est":["sp98","e85"]},{"date":"2026-07-30","e10":2.0285,"sp98":2.1097,"gazole":2.2085,"e85":0.8569,"est":["e10","sp98","gazole","e85"]},{"date":"2026-07-31","e10":2.028,"sp98":2.112,"gazole":2.214,"e85":0.858},{"date":"2026-08-01","e10":2.03,"sp98":2.116,"gazole":2.225,"e85":0.859},{"date":"2026-08-02","e10":2.032,"sp98":2.12,"gazole":2.229,"e85":0.8595,"est":["e85"]},{"date":"2026-08-03","e10":2.033,"sp98":2.123,"gazole":2.233,"e85":0.86},{"date":"2026-08-04","e10":2.0252,"sp98":2.1162,"gazole":2.2265,"e85":0.86,"est":["e10","sp98","gazole","e85"]},{"date":"2026-08-05","e10":2.0175,"sp98":2.1095,"gazole":2.22,"e85":0.86,"est":["e10","sp98","gazole","e85"]},{"date":"2026-08-06","e10":2.0097,"sp98":2.1028,"gazole":2.2135,"e85":0.86,"est":["e10","sp98","gazole","e85"]},{"date":"2026-08-07","e10":2.002,"sp98":2.096,"gazole":2.207,"e85":0.86},{"date":"2026-08-08","e10":1.987,"sp98":2.083,"gazole":2.189,"e85":0.859},{"date":"2026-08-09","e10":1.983,"sp98":2.08,"gazole":2.184,"e85":0.86},{"date":"2026-08-10","e10":1.983,"sp98":2.082,"gazole":2.183,"e85":0.86},{"date":"2026-08-11","e10":1.983,"sp98":2.078,"gazole":2.1815,"e85":0.861,"est":["e10","sp98","gazole","e85"]},{"date":"2026-08-12","e10":1.983,"sp98":2.074,"gazole":2.18,"e85":0.862},{"date":"2026-08-13","e10":1.991,"sp98":2.078,"gazole":2.192,"e85":0.862},{"date":"2026-08-14","e10":1.9953,"sp98":2.0817,"gazole":2.1975,"e85":0.8625,"est":["e10","sp98","gazole","e85"]},{"date":"2026-08-15","e10":1.9997,"sp98":2.0853,"gazole":2.203,"e85":0.863,"est":["e10","sp98","gazole","e85"]},{"date":"2026-08-16","e10":2.004,"sp98":2.089,"gazole":2.2085,"e85":0.8635,"est":["e10","sp98","gazole","e85"]},{"date":"2026-08-17","e10":2.0083,"sp98":2.0927,"gazole":2.214,"e85":0.864,"est":["e10","sp98","gazole","e85"]},{"date":"2026-08-18","e10":2.0127,"sp98":2.0963,"gazole":2.2195,"e85":0.8645,"est":["e10","sp98","gazole","e85"]},{"date":"2026-08-19","e10":2.017,"sp98":2.1,"gazole":2.225,"e85":0.865},{"date":"2026-08-20","e10":2.019,"sp98":2.103,"gazole":2.231,"e85":0.865},{"date":"2026-08-21","e10":2.0212,"sp98":2.1066,"gazole":2.2338,"e85":0.8654,"est":["e10","sp98","gazole","e85"]},{"date":"2026-08-22","e10":2.0234,"sp98":2.1102,"gazole":2.2366,"e85":0.8658,"est":["e10","sp98","gazole","e85"]},{"date":"2026-08-23","e10":2.0256,"sp98":2.1138,"gazole":2.2394,"e85":0.8662,"est":["e10","sp98","gazole","e85"]},{"date":"2026-08-24","e10":2.0278,"sp98":2.1174,"gazole":2.2422,"e85":0.8666,"est":["e10","sp98","gazole","e85"]},{"date":"2026-08-25","e10":2.03,"sp98":2.121,"gazole":2.245,"e85":0.867},{"date":"2026-08-26","e10":2.033,"sp98":2.124,"gazole":2.245,"e85":0.869},{"date":"2026-08-27","e10":2.0375,"sp98":2.1282,"gazole":2.2417,"e85":0.8696,"est":["e10","sp98","gazole","e85"]},{"date":"2026-08-28","e10":2.042,"sp98":2.1325,"gazole":2.2384,"e85":0.8702,"est":["e10","sp98","gazole","e85"]},{"date":"2026-08-29","e10":2.0465,"sp98":2.1368,"gazole":2.2351,"e85":0.8709,"est":["e10","sp98","gazole","e85"]},{"date":"2026-08-30","e10":2.051,"sp98":2.141,"gazole":2.2319,"e85":0.8715,"est":["e10","sp98","gazole","e85"]},{"date":"2026-08-31","e10":2.0555,"sp98":2.1452,"gazole":2.2286,"e85":0.8721,"est":["e10","sp98","gazole","e85"]},{"date":"2026-09-01","e10":2.06,"sp98":2.1495,"gazole":2.2253,"e85":0.8728,"est":["e10","sp98","gazole","e85"]},{"date":"2026-09-02","e10":2.0645,"sp98":2.1538,"gazole":2.222,"e85":0.8734,"est":["e10","sp98","e85"]},{"date":"2026-09-03","e10":2.069,"sp98":2.158,"gazole":2.228,"e85":0.874},{"date":"2026-09-04","e10":2.09,"sp98":2.1675,"gazole":2.2403,"e85":0.8765,"est":["sp98","gazole","e85"]},{"date":"2026-09-05","e10":2.0966,"sp98":2.177,"gazole":2.2527,"e85":0.879,"est":["e10","sp98","gazole","e85"]},{"date":"2026-09-06","e10":2.1032,"sp98":2.1865,"gazole":2.265,"e85":0.8815,"est":["e10","sp98","gazole","e85"]},{"date":"2026-09-07","e10":2.1098,"sp98":2.196,"gazole":2.2773,"e85":0.884,"est":["e10","sp98","gazole","e85"]},{"date":"2026-09-08","e10":2.1164,"sp98":2.2055,"gazole":2.2897,"e85":0.8865,"est":["e10","sp98","gazole","e85"]},{"date":"2026-09-09","e10":2.123,"sp98":2.215,"gazole":2.302,"e85":0.889},{"date":"2026-09-10","e10":2.1275,"sp98":2.2199,"gazole":2.3091,"e85":0.8887,"est":["e10","sp98","gazole","e85"]},{"date":"2026-09-11","e10":2.132,"sp98":2.2247,"gazole":2.3163,"e85":0.8884,"est":["e10","sp98","gazole","e85"]},{"date":"2026-09-12","e10":2.1365,"sp98":2.2296,"gazole":2.3234,"e85":0.8881,"est":["e10","sp98","gazole","e85"]},{"date":"2026-09-13","e10":2.141,"sp98":2.2344,"gazole":2.3306,"e85":0.8879,"est":["e10","sp98","gazole","e85"]},{"date":"2026-09-14","e10":2.1455,"sp98":2.2393,"gazole":2.3377,"e85":0.8876,"est":["e10","sp98","gazole","e85"]},{"date":"2026-09-15","e10":2.15,"sp98":2.2441,"gazole":2.3449,"e85":0.8873,"est":["sp98","gazole","e85"]},{"date":"2026-09-16","e10":2.153,"sp98":2.249,"gazole":2.352,"e85":0.887},{"date":"2026-09-17","e10":2.164,"sp98":2.258,"gazole":2.37,"e85":0.89},{"date":"2026-09-18","e10":2.1457,"sp98":2.234,"gazole":2.3597,"e85":0.8913,"est":["e10","sp98","gazole","e85"]},{"date":"2026-09-19","e10":2.1273,"sp98":2.21,"gazole":2.3493,"e85":0.8927,"est":["e10","sp98","gazole","e85"]},{"date":"2026-09-20","e10":2.109,"sp98":2.186,"gazole":2.339,"e85":0.894},{"date":"2026-09-21","e10":2.157,"sp98":2.243,"gazole":2.402,"e85":0.889}]};
+  var KEYS = ["e10", "sp98", "gazole", "e85"];
+  var NAMES = { e10: "SP95-E10", sp98: "SP98", gazole: "gazole", e85: "E85" };
+  var WINDOW = 93;
+  function pd(s) { var m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(String(s)); return m ? Date.UTC(+m[1], +m[2] - 1, +m[3]) : NaN; }
+  function iso(ms) { return new Date(ms).toISOString().slice(0, 10); }
+  var START, END, SERIES, UPDATED;
+
+  function buildSeries(data) {
+    var days = (data && data.days || []).filter(function (d) { return d && d.date; })
+      .sort(function (a, b) { return a.date < b.date ? -1 : 1; });
+    if (!days.length) return false;
+    var endT = pd(days[days.length - 1].date), startT = endT - (WINDOW - 1) * DAY;
+    var anchors = {};
+    KEYS.forEach(function (k) { anchors[k] = []; });
+    days.forEach(function (d) {
+      var est = d.est || [];
+      KEYS.forEach(function (k) { if (typeof d[k] === "number") anchors[k].push([pd(d.date), d[k], est.indexOf(k) < 0]); });
+    });
+    var out = [];
+    for (var t = startT; t <= endT; t += DAY) {
+      var row = { t: t, date: iso(t) };
+      KEYS.forEach(function (k) {
+        var a = anchors[k], lo = null, hi = null, ex = null;
+        a.forEach(function (p) { if (p[0] === t) ex = p; else if (p[0] < t) lo = p; else if (!hi) hi = p; });
+        if (ex) { row[k] = ex[1]; row[k + "_m"] = ex[2]; return; }
+        if (!lo && !hi) { row[k] = 0; row[k + "_m"] = false; return; }
+        row[k] = lo && hi ? lo[1] + (hi[1] - lo[1]) * (t - lo[0]) / (hi[0] - lo[0]) : (lo || hi)[1];
+        row[k + "_m"] = false;
+      });
+      out.push(row);
+    }
+    SERIES = out; START = iso(startT); END = iso(endT); UPDATED = data.updated || null;
+    return true;
+  }
+  buildSeries(FALLBACK);
+
+  // Valeur résiduelle moyenne (% du prix neuf) selon l'âge : repères de marché français
+  // (-20 à -25 % la 1re année, -10 à -15 %/an ensuite, ~50-55 % perdus à 5 ans, ralentissement après 10 ans)
+  var RESID = [[0,100],[1,78],[2,67],[3,58],[4,51],[5,45],[6,40],[7,36],[8,32],[9,29],[10,26],[12,21],[15,16],[20,10],[30,6]];
+  function resid(age) {
+    if (age <= 0) return 100;
+    for (var i = 1; i < RESID.length; i++) {
+      if (age <= RESID[i][0]) { var a = RESID[i - 1], b = RESID[i]; return a[1] + (b[1] - a[1]) * (age - a[0]) / (b[0] - a[0]); }
+    }
+    return RESID[RESID.length - 1][1];
+  }
+  function model(p) {
+    var kwh = Math.max(0, p.kwh || 0), loss = Math.min(Math.max(0, p.loss || 0), 90) / 100;
+    var cons = Math.max(0, p.cons || 0), loa = Math.max(0, p.loa || 0), abo = Math.max(0, p.abo || 0);
+    var yearMode = p.kmMode === 1;
+    var fuelCons = Math.max(0, p.fuelCons || 0), kmDay = Math.max(0, p.kmDay || 0) / (yearMode ? 365 : 1);
+    var fuel = KEYS.indexOf(p.fuel) >= 0 ? p.fuel : "e10";
+    var from = p.from || START, to = p.to || END;
+    if (from < START) from = START; if (to > END) to = END;
+    if (to < from) { var s = from; from = to; to = s; }
+    var rows = SERIES.filter(function (r) { return r.date >= from && r.date <= to; });
+    var days = rows.length, km = days * kmDay;
+    var kwhPerKm = cons / 100 / (1 - loss);
+    var aboDay = abo * 12 / 365, elecDay = kmDay * kwhPerKm * kwh + aboDay, loaDay = loa * 12 / 365, litresDay = kmDay * fuelCons / 100;
+    var iceRentDay = Math.max(0, p.iceRent || 0) * 12 / 365;
+    var icePrice = Math.max(0, p.icePrice || 0), iceAge = Math.max(0, p.iceAge || 0), depOn = p.depOn !== 0;
+    var endAge = iceAge + (pd(END) - pd(to)) / DAY / 365; // âge au dernier jour de la période
+    function ageAt(i) { return Math.max(0, endAge - (days - i) / 365); }
+    var cumT = [0], cumA = [0], prices = [], t = 0, sumP = 0, fuelCost = 0, depTotal = 0;
+    rows.forEach(function (r, i) {
+      prices.push(r[fuel]); sumP += r[fuel];
+      var dep = depOn ? icePrice * (resid(ageAt(i)) - resid(ageAt(i + 1))) / 100 : 0;
+      depTotal += dep;
+      fuelCost += litresDay * r[fuel];
+      t += litresDay * r[fuel] + iceRentDay + dep; cumT.push(t);
+      cumA.push((i + 1) * (elecDay + loaDay));
+    });
+    var therm = t, elec = elecDay * days, loaTotal = loaDay * days, a290 = elec + loaTotal;
+    var saving = therm - a290, energySaving = fuelCost - elec, iceRentTotal = iceRentDay * days;
+    var avgP = days ? sumP / days : 0;
+    var gainPerKm = fuelCons / 100 * avgP - kwhPerKm * kwh, aboTotal = aboDay * days;
+    var breakeven;
+    var fixedGap = loaDay + aboDay - iceRentDay - (days ? depTotal / days : 0);
+    if (fixedGap <= 0) breakeven = "dès le 1er km";
+    else if (gainPerKm <= 0) breakeven = "jamais à ce prix du kWh";
+    else breakeven = yearMode ? F.int(Math.ceil(fixedGap / gainPerKm * 365 / 100) * 100) + NBSP + "km/an" : F.int(Math.ceil(fixedGap / gainPerKm)) + NBSP + "km/jour";
+    var parity = kwhPerKm > 0 && kmDay > 0 ? Math.max(0, fuelCons / 100 * avgP - aboDay / kmDay) / kwhPerKm : 0;
+    var top = Math.max(therm, a290, 1);
+    var t0 = pd(from), t1 = pd(to);
+    return {
+      params: p, t0: t0, t1: t1, days: days, km: km,
+      therm: therm, a290: a290, elec: elec, loaTotal: loaTotal,
+      saving: saving, energySaving: energySaving,
+      thermPct: therm / top * 100, a290Pct: a290 / top * 100,
+      cumT: cumT, cumA: cumA, prices: prices.length ? prices : [0],
+      state: saving >= 0 ? "saving" : "deficit", from: from, to: to,
+      f: {
+        heroNum: F.int(Math.abs(saving)),
+        heroLabel: saving >= 0 ? "Économisé, loyer compris" : "Surcoût, loyer compris",
+        period: "Du " + F.dateLong(t0) + " au " + F.dateLong(t1),
+        days: F.int(days) + NBSP + "jours",
+        km: F.int(km) + NBSP + "km",
+        vs: "A290 " + (p.version || 220) + NBSP + "ch comparée à une voiture " + NAMES[fuel] + " à " + F.dec(fuelCons, 1) + NBSP + "L/100" + NBSP + "km",
+        therm: F.eur2(therm), a290: F.eur2(a290), saved: F.eur2(Math.abs(saving)),
+        breakdown: "A290 : " + (abo > 0 ? F.eur2(elec - aboTotal) + " d’électricité + " + F.eur2(aboTotal) + " d’abonnement + " : F.eur2(elec) + " d’électricité + ") + F.eur2(loaTotal) + " de loyer. Thermique : " + F.eur2(fuelCost) + " de carburant"
+          + (iceRentTotal > 0 ? " + " + F.eur2(iceRentTotal) + " de loyer" : "")
+          + (depTotal > 0 ? " + " + F.eur2(depTotal) + " de décote estimée" : "") + ".",
+        depHint: !depOn ? "Décote non comptée : en location, elle est déjà payée dans le loyer."
+          : icePrice > 0 ? "Valeur estimée aujourd’hui : " + F.eur0(icePrice * resid(endAge) / 100) + " (" + F.int(Math.round(resid(endAge))) + " % du prix neuf). Décote sur la période : " + F.eur0(depTotal) + ". Tendance moyenne nationale, pas une cote Argus de votre modèle."
+          : "Indiquez le prix neuf pour estimer la décote.",
+        energySaving: F.eur2(energySaving),
+        loaTotal: F.eur0(loaTotal),
+        breakeven: breakeven,
+        kmValue: F.int(km),
+        per100A: F.eur2(km > 0 ? elec / km * 100 : kwhPerKm * 100 * kwh),
+        per100T: F.eur2(fuelCons * avgP),
+        projYear: (saving >= 0 ? "" : "Surcoût ") + F.eur0(days ? Math.abs(saving) / days * 365 : 0),
+        parity: F.dec(parity, 3),
+        periodShort: F.dateShort(t0) + " – " + F.dateShort(t1)
+      }
+    };
+  }
+
+  var app = document.getElementById("app"), form = document.getElementById("params"), chart = document.getElementById("chart");
+  var FIELDS = ["version", "kmMode", "depOn", "iceRent", "iceAge", "icePrice", "kwh", "abo", "loss", "cons", "loa", "fuel", "fuelCons", "kmDay"];
+  var STORE = "a290-eco-v2";
+  try {
+    var saved = JSON.parse(localStorage.getItem(STORE) || "{}");
+    FIELDS.forEach(function (k) { var el = form.querySelector('[data-p="' + k + '"]'); if (el && saved[k] != null && saved[k] !== "") el.value = saved[k]; });
+  } catch (e) {}
+  function persist() {
+    try { var o = {}; FIELDS.forEach(function (k) { o[k] = form.querySelector('[data-p="' + k + '"]').value; }); localStorage.setItem(STORE, JSON.stringify(o)); } catch (e) {}
+  }
+
+  var tbody = document.getElementById("tbody");
+  function table(m) {
+    var dfRow = new Intl.DateTimeFormat("fr-FR", { weekday: "short", day: "numeric", month: "short", timeZone: "UTC" });
+    tbody.innerHTML = SERIES.slice().reverse().map(function (r) {
+      var sel = r.date >= m.from && r.date <= m.to ? ' class="sel"' : "";
+      return "<tr" + sel + "><td>" + dfRow.format(new Date(r.t)) + "</td>" + KEYS.map(function (k) {
+        return '<td class="' + (r[k + "_m"] ? "" : "est") + '">' + F.dec(r[k], 3) + "</td>";
+      }).join("") + "</tr>";
+    }).join("");
+  }
+
+  var VERSIONS = { "180": { wltp: 15.8, real: 19 }, "220": { wltp: 16.5, real: 20 } };
+  var vInput = document.getElementById("p-version");
+  var vBtns = form.querySelectorAll("[data-version]");
+  function applyVersion(v, setCons) {
+    if (!VERSIONS[v]) v = "220";
+    vInput.value = v;
+    var d = VERSIONS[v];
+    Array.prototype.forEach.call(vBtns, function (b) { b.setAttribute("aria-pressed", b.getAttribute("data-version") === v ? "true" : "false"); });
+    Array.prototype.forEach.call(document.querySelectorAll('[data-v="ch"]'), function (e) { e.textContent = v; });
+    Array.prototype.forEach.call(document.querySelectorAll('[data-v="wltp"]'), function (e) { e.textContent = F.dec(d.wltp, 1); });
+    Array.prototype.forEach.call(document.querySelectorAll('[data-v="real"]'), function (e) { e.textContent = F.int(d.real); });
+    Array.prototype.forEach.call(form.querySelectorAll("[data-kind]"), function (b) {
+      b.setAttribute("data-preset", F.dec(d[b.getAttribute("data-kind")], 1).replace(/,0$/, ""));
+    });
+    if (setCons) document.getElementById("p-cons").value = F.dec(d.wltp, 1);
+  }
+  applyVersion(vInput.value, false);
+  Array.prototype.forEach.call(vBtns, function (b) {
+    b.addEventListener("click", function () { applyVersion(b.getAttribute("data-version"), true); render(); });
+  });
+  var kmModeInput = document.getElementById("p-kmMode"), kmInput = document.getElementById("p-kmDay");
+  var kmBtns = form.querySelectorAll("[data-kmmode]");
+  function applyKmMode(mode, convert) {
+    mode = mode === "1" ? "1" : "0";
+    var prev = kmModeInput.value;
+    kmModeInput.value = mode;
+    Array.prototype.forEach.call(kmBtns, function (b) { b.setAttribute("aria-pressed", b.getAttribute("data-kmmode") === mode ? "true" : "false"); });
+    document.getElementById("km-unit").textContent = mode === "1" ? "km/an" : "km/jour";
+    document.getElementById("km-field-lab").textContent = mode === "1" ? "Kilométrage annuel prévu" : "Distance moyenne par jour";
+    if (convert && prev !== mode) {
+      var v = parseFloat(String(kmInput.value).replace(/\s/g, "").replace(",", ".")) || 0;
+      kmInput.value = mode === "1" ? String(Math.round(v * 365 / 500) * 500) : F.dec(v / 365, 1).replace(/,0$/, "").replace(/\u202f|\u00a0/g, "");
+    }
+  }
+  applyKmMode(kmModeInput.value, false);
+  Array.prototype.forEach.call(kmBtns, function (b) {
+    b.addEventListener("click", function () { applyKmMode(b.getAttribute("data-kmmode"), true); render(); });
+  });
+  var depInput = document.getElementById("p-depOn"), depBtns = form.querySelectorAll("[data-dep]");
+  function applyDep(v) {
+    v = v === "0" ? "0" : "1"; depInput.value = v;
+    Array.prototype.forEach.call(depBtns, function (b) { b.setAttribute("aria-pressed", b.getAttribute("data-dep") === v ? "true" : "false"); });
+  }
+  applyDep(depInput.value);
+  Array.prototype.forEach.call(depBtns, function (b) { b.addEventListener("click", function () { applyDep(b.getAttribute("data-dep")); render(); }); });
+  var presets = form.querySelectorAll("[data-preset]");
+  function sync() {
+    var cur = A290.readParams(form).cons;
+    Array.prototype.forEach.call(presets, function (b) {
+      b.setAttribute("aria-pressed", Math.abs(parseFloat(b.getAttribute("data-preset").replace(",", ".")) - cur) < 1e-9 ? "true" : "false");
+    });
+  }
+  var fromIn = document.getElementById("p-from"), toIn = document.getElementById("p-to");
+  var dfUpd = new Intl.DateTimeFormat("fr-FR", { day: "numeric", month: "long", year: "numeric", timeZone: "UTC" });
+  function applyWindow(reset) {
+    [fromIn, toIn].forEach(function (el) { el.min = START; el.max = END; });
+    if (reset || !fromIn.value || fromIn.value < START || fromIn.value > END) fromIn.value = START;
+    if (reset || !toIn.value || toIn.value > END || toIn.value < START) toIn.value = END;
+    Array.prototype.forEach.call(document.querySelectorAll("[data-upd]"), function (el) { el.textContent = dfUpd.format(new Date(pd(END))); });
+  }
+  applyWindow(true);
+  function render() {
+    var m = model(A290.readParams(form));
+    A290.bind(app, m);
+    A290.costChart(chart, m);
+    table(m);
+    sync();
+    persist();
+  }
+  form.addEventListener("input", render);
+  form.addEventListener("change", render);
+  Array.prototype.forEach.call(presets, function (b) {
+    b.addEventListener("click", function () { document.getElementById("p-cons").value = b.getAttribute("data-preset"); render(); });
+  });
+
+  // Thème : suit le réglage de l'appareil, bascule manuelle possible
+  var themeBtn = document.getElementById("theme"), root = document.documentElement;
+  var mq = window.matchMedia ? window.matchMedia("(prefers-color-scheme: dark)") : null;
+  function isNight() { var a = root.getAttribute("data-theme"); return a ? (a === "night" || a === "dark") : !!(mq && mq.matches); }
+  function label() { var n = isNight(); themeBtn.textContent = n ? "Mode glacier" : "Mode nuit"; themeBtn.setAttribute("aria-pressed", n ? "false" : "true"); }
+  try { var th = localStorage.getItem("a290-theme"); if (th) root.setAttribute("data-theme", th); } catch (e) {}
+  themeBtn.addEventListener("click", function () {
+    var next = isNight() ? "day" : "night";
+    root.setAttribute("data-theme", next);
+    try { localStorage.setItem("a290-theme", next); } catch (e) {}
+    label();
+  });
+  if (mq && mq.addEventListener) mq.addEventListener("change", label);
+  label();
+
+  // Photo : affichée si elle a déjà été enregistrée dans ce navigateur, sinon l'emplacement est masqué
+  var slot = document.getElementById("photo"), photo = null;
+  try { photo = localStorage.getItem("a290-photo"); } catch (e) {}
+  slot.style.backgroundImage = 'url("' + (photo || "img/a290-electrique.webp") + '")';
+  slot.setAttribute("data-filled", "true");
+
+  var dlg = document.getElementById("method");
+  document.getElementById("open-method").addEventListener("click", function () { if (dlg.showModal) dlg.showModal(); else dlg.setAttribute("open", ""); });
+  document.getElementById("close-method").addEventListener("click", function () { dlg.close(); });
+  dlg.addEventListener("click", function (e) { if (e.target === dlg) dlg.close(); });
+
+  render();
+  fetch("data/prix.json?v=" + Date.now(), { cache: "no-store" })
+    .then(function (r) { if (!r.ok) throw new Error(r.status); return r.json(); })
+    .then(function (data) { if (buildSeries(data)) { applyWindow(true); render(); } })
+    .catch(function () { /* on garde la copie intégrée */ });
+})();
+
+</script>
+</body>
+</html>

@@ -1,0 +1,41 @@
+name: Mise à jour des prix carburant
+
+on:
+  schedule:
+    - cron: "30 5 * * *"   # tous les jours vers 7 h 30 (heure de Paris en été)
+  workflow_dispatch:
+    inputs:
+      backfill:
+        description: "Recalculer les 100 derniers jours (à lancer une fois au départ)"
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+
+concurrency:
+  group: update-prices
+  cancel-in-progress: false
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Calculer les moyennes nationales
+        run: |
+          if [ "${{ inputs.backfill }}" = "true" ]; then
+            python scripts/update_prices.py --backfill
+          else
+            python scripts/update_prices.py
+          fi
+      - name: Enregistrer si les prix ont changé
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898699+github-actions[bot]@users.noreply.github.com"
+          git add data/prix.json
+          git diff --cached --quiet || git commit -m "Prix carburant du $(date -u +%F)"
+          git push
